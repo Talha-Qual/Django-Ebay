@@ -9,11 +9,14 @@ class User(AbstractUser):
 
 class Listings(models.Model):
     title = models.CharField(max_length = 255)
-    content = models.CharField(max_length = 255)
+    description = models.TextField()
     bid = models.CharField(max_length = 100)
+    category = models.CharField(max_length = 200)
+    image = models.ImageField(default ='No Image', upload_to = 'images')
 
     def __str__(self):
-        return f' The title is: {self.title} The content is: {self.content} The current bid is: {self.bid}' 
+        return f' The title is: {self.title} The content is: {self.description} The current bid is: {self.bid} The caption is: {self.category} The image is: {self.image}' 
+
 
 class Bids():
     pass

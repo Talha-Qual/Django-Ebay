@@ -5,15 +5,18 @@ from .forms import CreateListing
 from http.client import HTTPResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.http import HttpResponse, Http404
 from django.urls import reverse
 
-from .models import User
+from .models import User, Listings
 
 
 
 def index(request):
-    return render(request, "auctions/index.html")
-
+    return render(request, "auctions/index.html", {
+        "listings": Listings.objects.all()
+    }
+    )
 
 def login_view(request):
     if request.method == "POST":
@@ -26,7 +29,10 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            if 'next' in request.POST:
+                return redirect(request.POST.get('next'))
+            else:
+                return redirect('index')
         else:
             return render(request, "auctions/login.html", {
                 "message": "Invalid username and/or password."
@@ -80,3 +86,11 @@ def create_listing(request):
         else:
             return render(request, "auctions/create_listing.html", {"form": form})
     return render(request, "auctions/create_listing.html", {"form": CreateListing()})
+
+@login_required(login_url='register')
+def view_listing(request, title):
+    try:
+        f = Listings.objects.get(title = title)
+    except Listings.DoesNotExist:
+        raise Http404("flight not found")
+    return render(request, "auctions/listing.html", {"listing": f})
