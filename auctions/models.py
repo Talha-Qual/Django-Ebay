@@ -1,4 +1,6 @@
+from io import open_code
 from unittest.util import _MAX_LENGTH
+from xmlrpc.client import TRANSPORT_ERROR
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -11,18 +13,46 @@ class Listings(models.Model):
     title = models.CharField(max_length = 255)
     description = models.TextField()
     bid = models.CharField(max_length = 100)
-    category = models.CharField(max_length = 200)
     image = models.ImageField(default ='No Image', upload_to = 'images')
+
+    TECH = 'TPS'
+    CLOTHING = 'CLT'
+    UNKNOWN = 'UNK'
+    FOOD = 'FOD'
+    ART = 'ART'
+    ACCESSORIES = 'AC'
+
+
+    CATEGORY_CHOICES = [
+    (TECH, 'Tops'),
+    (FOOD, 'Food'),
+    (ART, 'Art'),
+    (CLOTHING, 'Clothing'),
+    (UNKNOWN, 'Unknown'),
+    (ACCESSORIES, 'Accessories'),
+    ]
+
+    category = models.CharField(max_length = 3, choices = CATEGORY_CHOICES, blank = True)
 
     def __str__(self):
         return f' The title is: {self.title} The content is: {self.description} The current bid is: {self.bid} The caption is: {self.category} The image is: {self.image}' 
 
 
 class Bids():
-    pass
+    offer = models.PositiveSmallIntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.user.username} placed a bid for ${self.offer} for {self.listing.title}'
 
 class Comments():
-    pass
+    comment = models.TextField(max_length = 500)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username} wrote '{self.comment}'' on {self.listing.title}"
 
 
 

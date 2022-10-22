@@ -11,12 +11,15 @@
   Price: ${{listing.bid}}
   <br>
   {% if listing.image %}
-      <img src = "{{listing.image.url}}" alt = "there should be an image here" style = "max-height: 300px;">
+      <img src = "{{listing.image.url}}" style = "max-height: 300px;">
       <br>
   {% endif %}
   The category is: {{listing.category}}
-  <!-- <br>
-  <a href = "{% url 'view_listing' listing.title %}">Check this out!</a> -->
+</section>
+
+<section>
+  <button type = "submit"> Add this item to your Watchlist!
+  </button>
 </section>
 
 {% endblock %}

@@ -14,7 +14,8 @@ from .models import User, Listings
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "listings": Listings.objects.all()
+        "listings": Listings.objects.all(),
+        "categories": Listings.CATEGORY_CHOICES,
     }
     )
 
@@ -92,5 +93,18 @@ def view_listing(request, title):
     try:
         f = Listings.objects.get(title = title)
     except Listings.DoesNotExist:
-        raise Http404("flight not found")
+        raise Http404("Listing not found")
     return render(request, "auctions/listing.html", {"listing": f})
+
+@login_required(login_url='register')
+def categories_view(request, selection):
+    try:
+        category = Listings.objects.filter(category=selection, active=True)
+    except:
+        category = None
+    return render(request, "auctions/categories.html", {
+        "selection": selection,
+        "category": category,
+        "total_items": len(Listings.objects.filter(user_id=request.user.id)),
+        "categories": Listings.CATEGORY_CHOICES
+        })
