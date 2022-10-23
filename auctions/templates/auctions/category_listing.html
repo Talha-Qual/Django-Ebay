@@ -1,0 +1,24 @@
+{% extends "auctions/layout.html" %}
+
+{% block main %}
+<h2>Are you looking for {{ category.category }} this? You've come to the right place!</h2>
+
+<article>
+  {% for item in category %}
+<section>
+  {{item.title}}
+  <br>
+  {{item.description}}
+  <br>
+  {% if item.image %}
+  <img src = "{{item.image.url}}" style = "max-height: 300px;">
+  <br>
+{% endif %}
+</section>
+
+{% endfor %}
+</article>
+
+
+
+{% endblock %}

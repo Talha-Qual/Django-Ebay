@@ -15,7 +15,7 @@ class Listings(models.Model):
     image = models.ImageField(default ='No Image', upload_to = 'images')
     user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)
 
-    TECH = 'TPS'
+    TECH = 'TCH'
     CLOTHING = 'CLT'
     UNKNOWN = 'UNK'
     FOOD = 'FOD'
@@ -24,7 +24,7 @@ class Listings(models.Model):
 
 
     CATEGORY_CHOICES = [
-    (TECH, 'Tops'),
+    (TECH, 'Technology'),
     (FOOD, 'Food'),
     (ART, 'Art'),
     (CLOTHING, 'Clothing'),

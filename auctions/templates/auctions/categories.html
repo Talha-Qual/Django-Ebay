@@ -2,4 +2,9 @@
 
 {% block main %}
 <h2>Some of the hottest categories around!</h2>
+
+{% for category in categories %}
+<a href = "{% url 'category_listing' category.0 %}">{{category.1}}</a>
+{% endfor %}
+
 {% endblock %}

@@ -99,7 +99,7 @@ def view_listing(request, title):
 @login_required(login_url='register')
 def categories_view(request):
     try:
-        category = Listings.objects.filter(category=selection, active=True)
+        category = Listings.objects.filter(category = category, active=True)
     except:
         category = None
     return render(request, "auctions/categories.html", {
@@ -108,3 +108,11 @@ def categories_view(request):
         "total_items": len(Listings.objects.filter(user_id=request.user.id)),
         "categories": Listings.CATEGORY_CHOICES
         })
+
+@login_required(login_url='register')
+def category_listing(request, selection):
+    try:
+        category = Listings.objects.filter(category = selection)
+    except:
+        category = None
+    return render(request, "auctions/category_listing.html", {"category": category})
