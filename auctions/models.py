@@ -1,3 +1,4 @@
+from email.policy import default
 from io import open_code
 from unittest.util import _MAX_LENGTH
 from xmlrpc.client import TRANSPORT_ERROR
@@ -6,14 +7,14 @@ from django.db import models
 
 
 class User(AbstractUser):
-    def __str__(self):
-        return f'{self.first} {self.last}'
+    pass 
 
 class Listings(models.Model):
     title = models.CharField(max_length = 255)
     description = models.TextField()
     bid = models.CharField(max_length = 100)
     image = models.ImageField(default ='No Image', upload_to = 'images')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank = True)
 
     TECH = 'TPS'
     CLOTHING = 'CLT'
@@ -40,7 +41,7 @@ class Listings(models.Model):
 
 class Bids():
     offer = models.PositiveSmallIntegerField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank = True)
     listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -48,7 +49,7 @@ class Bids():
 
 class Comments():
     comment = models.TextField(max_length = 500)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank = True)
     listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
 
     def __str__(self):

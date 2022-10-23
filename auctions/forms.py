@@ -6,4 +6,4 @@ from django import forms
 class CreateListing(ModelForm):
   class Meta:
     model = models.Listings
-    fields = '__all__'
+    fields = ['title', 'description', 'bid', 'image', 'user', 'category']

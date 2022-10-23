@@ -105,6 +105,6 @@ def categories_view(request, selection):
     return render(request, "auctions/categories.html", {
         "selection": selection,
         "category": category,
+        "categories": Listings.CATEGORY_CHOICES,
         "total_items": len(Listings.objects.filter(user_id=request.user.id)),
-        "categories": Listings.CATEGORY_CHOICES
         })
