@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 
-from .models import User, Listings
+from .models import User, Listings, Watchlist
 
 
 
@@ -73,7 +73,7 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
-@login_required(login_url='register')
+@login_required(login_url='login')
 def create_listing(request):
     if request.method == "POST":
         form = CreateListing(request.POST, request.FILES)
@@ -88,7 +88,7 @@ def create_listing(request):
             return render(request, "auctions/create_listing.html", {"form": form})
     return render(request, "auctions/create_listing.html", {"form": CreateListing()})
 
-@login_required(login_url='register')
+@login_required(login_url='login')
 def view_listing(request, title):
     try:
         f = Listings.objects.get(title = title)
@@ -96,7 +96,7 @@ def view_listing(request, title):
         raise Http404("Listing not found")
     return render(request, "auctions/listing.html", {"listing": f})
 
-@login_required(login_url='register')
+@login_required(login_url='login')
 def categories_view(request):
     try:
         category = Listings.objects.filter(category = category, active=True)
@@ -105,14 +105,22 @@ def categories_view(request):
     return render(request, "auctions/categories.html", {
         "listings": Listings.objects.all(),
         "category": category,
-        "total_items": len(Listings.objects.filter(user_id=request.user.id)),
         "categories": Listings.CATEGORY_CHOICES
         })
 
-@login_required(login_url='register')
+@login_required(login_url='login')
 def category_listing(request, selection):
     try:
         category = Listings.objects.filter(category = selection)
     except:
         category = None
-    return render(request, "auctions/category_listing.html", {"category": category})
+    return render(request, "auctions/category_listing.html", {"category": category, "selection": selection})
+
+@login_required(login_url='login')
+def watchlist_page(request):
+    try:
+        watchlist = Watchlist.objects.filter(user_id = request.user.id).values_list("listing_id")
+        watching = Listings.objects.filter(id__in = watchlist)
+    except:
+        watching = 0
+    return render(request, "auctions/watchlist.html")

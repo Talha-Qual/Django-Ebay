@@ -22,6 +22,9 @@
         <div class="form-group">
             <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
         </div>
+        {% if request.GET.next %}
+        <input type="hidden" name = "next" value = "{{request.GET.next}}">
+        {% endif %}
         <input type="submit" value="Register">
     </form>
 

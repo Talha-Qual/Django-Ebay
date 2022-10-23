@@ -55,6 +55,11 @@ class Comments():
         return f"{self.user.username} wrote '{self.comment}'' on {self.listing.title}"
 
 
+class Watchlist(models.Model):
+    user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
+    active = models.BooleanField(default=False)
+
 
 # class CreateForm(forms.Form):
 #   title = forms.CharField(label="Title")
