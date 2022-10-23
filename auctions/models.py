@@ -6,14 +6,14 @@ from django.db import models
 
 
 class User(AbstractUser):
-    def __str__(self):
-        return f'{self.first} {self.last}'
+    pass
 
 class Listings(models.Model):
     title = models.CharField(max_length = 255)
     description = models.TextField()
     bid = models.CharField(max_length = 100)
     image = models.ImageField(default ='No Image', upload_to = 'images')
+    user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)
 
     TECH = 'TPS'
     CLOTHING = 'CLT'

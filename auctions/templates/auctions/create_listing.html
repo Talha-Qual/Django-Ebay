@@ -7,6 +7,7 @@ Create A Listing
 {% endblock %}
 
 <form action = "{% url 'create_listing' %}" method = "POST" enctype="multipart/form-data">
+
   {% csrf_token %}
   <table>
     {{ form.as_table }}
@@ -14,7 +15,6 @@ Create A Listing
 
   <input type = "submit" value = "Create Listing">
   <input type = "reset" value = "Reset">
-  <input type = "submit" value = "Upload">
 </form>
 
 {% endblock %}
