@@ -32,7 +32,7 @@
     >
     <button type = "submit" name = "bid">Bid</button>
   </form>
-  
+
     {% endif %}
     Original Price: ${{ listing.price }}
     {{ total_bids }} bids total
@@ -71,4 +71,22 @@
 
 <!-- Comments Stuff -->
 
+<!-- View comments -->
+{% if comments %}
+
+  {% for com in comments %}
+    {{com.user}}
+    {{com.com}}
+    {{com.timestamp}}
+  {% endfor %}
+{% endif %}
+
+<!-- submit comments -->
+{% if user.is_authenticated %}
+  <form action = "{% url 'view_listing' listing.id %}" method = "POST">
+    {% csrf_token %}
+    {{ comment_form }}
+    <button type = "submit" name = "comment">Post</button>
+  </form>
+{% endif %}
 {% endblock %}
