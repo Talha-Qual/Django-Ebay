@@ -1,14 +1,15 @@
 from django.contrib.auth import authenticate, login, logout
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from .forms import CreateListing
+from .forms import CreateComment, CreateListing
 from http.client import HTTPResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 
-from .models import User, Listings, Watchlist
+from .models import User, Listings, Watchlist, Bids, Comments
 
 
 
@@ -88,13 +89,92 @@ def create_listing(request):
             return render(request, "auctions/create_listing.html", {"form": form})
     return render(request, "auctions/create_listing.html", {"form": CreateListing()})
 
+# if "watch" in request.POST:
+#     try:
+#         watchlist = Watchlist.objects.get(user_id=request.user.id)
+#     except:
+#         watchlist = Watchlist(user_id=request.user.id)
 @login_required(login_url='login')
-def view_listing(request, title):
-    try:
-        f = Listings.objects.get(title = title)
-    except Listings.DoesNotExist:
-        raise Http404("Listing not found")
-    return render(request, "auctions/listing.html", {"listing": f})
+def view_listing(request, item):
+    if request.method == "POST":
+        # add a listing to your watchlist
+        if "watch" in request.POST:
+            try:
+                watchlist = Watchlist.objects.get(user_id =request.user.id, listing_id = item)
+                watchlist.active = True
+                watchlist.save(update_fields=["active"])
+                return redirect(reverse("view_listing", args = (item,)))
+            except:
+                watchlist = Watchlist(user_id = request.user.id, listing_id = item, active=True)
+                watchlist.save()
+                return redirect(reverse("view_listing", args = (item,)))
+        if "unwatch" in request.POST:
+            watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
+            watchlist.active = False
+            watchlist.save(update_fields=["active"])
+            return redirect(reverse("view_listing", args=(item,)))
+        if "comment" in request.POST:
+            comment_form = CreateComment(request.POST)
+            if comment_form.is_valid():
+                input_comment = Comments(user=request.user, input_comment=(comment_form.cleaned_data["create_comment"]), timestamp=timezone.now(), listing=Listings(pk=item))
+                input_comment.save()
+                return redirect(reverse("view_listing", args=(item,)))
+            else:
+                return render(request, "auctions/listing.html", {
+                    "comment_form":comment_form
+                })
+
+        if "bid" in request.POST:
+            listing = Listings.objects.get(pk = item)
+            price = listing.price
+            bid = int(request.POST.get("amount"))
+            try:
+                highest = Bids(user_id = request.user.id).last()
+            except:
+                highest = 0
+            if bid < price and bid < highest:
+                return render(request, "auctions/view_listing.html")
+            else:
+                bids = Bids(user_id=request.user.id, listing_id = item, offer = bid)
+                bids.save()
+                highestbid = Listings.objects.get(pk=item)
+                highestbid.highestbid = bid
+                highestbid.save(update_fields=["highestbid"])
+                return redirect(reverse("view_listing", args=(item,)))
+        if "close" in request.POST:
+            listing = Listings.objects.get(pk = item)
+            listing.active = False
+            listing.save(update_fields=["active"])
+            return redirect(reverse("personal_listings"))
+    else:
+        try:
+            f = Listings.objects.get(pk = item)
+        except Listings.DoesNotExist:
+            raise Http404("Listing not found")
+        if watching is not None:
+            watching = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
+        if bids is not None:
+            bids = Bids.objects.filter(listing_id = item)
+        try:
+            listing = Listings.objects.get(pk=item)
+            winner = Bids.objects.filter(listing_id = item).last()
+        except:
+            winner = None
+        return render(request, "auctions/listing.html", {
+            "bid": bids,
+            "winner": winner,
+            "listing": f,
+            "watching": watching,
+            "comments": Comments.objects.filter(listing_id=item),
+            "categories": Listings.CATEGORY_CHOICES,
+            "comment_form": CreateComment()
+            })
+
+@login_required(login_url='login')
+def personal_listings(request):
+    return render(request, "auctions/personal_listings", {
+        "listings": Listings.objects.filter(user=request.user)
+    })
 
 @login_required(login_url='login')
 def categories_view(request):
@@ -109,6 +189,12 @@ def categories_view(request):
         })
 
 @login_required(login_url='login')
+def bids_page(request):
+    return render(request, "auctions/bid.html", {
+        "bids": Bids.objects.filter(user_id = request.user.id),
+    })
+
+@login_required(login_url='login')
 def category_listing(request, selection):
     try:
         category = Listings.objects.filter(category = selection)
@@ -119,8 +205,8 @@ def category_listing(request, selection):
 @login_required(login_url='login')
 def watchlist_page(request):
     try:
-        watchlist = Watchlist.objects.filter(user_id = request.user.id).values_list("listing_id")
+        watchlist = Watchlist.objects.filter(user_id = request.user.id, active = True).values_list("listing_id")
         watching = Listings.objects.filter(id__in = watchlist)
     except:
         watching = 0
-    return render(request, "auctions/watchlist.html")
+    return render(request, "auctions/watchlist.html", {"watching": watching, "watchlist": len(Watchlist.objects.filter(user_id=request.user.id)), "categories": Listings.CATEGORY_CHOICES})

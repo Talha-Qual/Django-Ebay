@@ -7,9 +7,9 @@
     {% for listing in listings %}
   
     <section>
-        {{listing.title}}
+        Title: {{listing.title}}
         <br>
-        {{listing.description}}
+        Description: {{listing.description}}
         <br>
         Price: ${{listing.bid}}
         <br>
@@ -19,7 +19,7 @@
         {% endif %}
         The category is: {{listing.category}}
         <br>
-        <a href = "{% url 'view_listing' listing.title %}">Check this out!</a>
+        <a href = "{% url 'view_listing' listing.id %}">Check this out!</a>
     </section>
 
     {% endfor %}

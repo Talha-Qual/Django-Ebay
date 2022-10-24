@@ -1,4 +1,6 @@
+from email.policy import default
 from io import open_code
+from sqlite3 import Timestamp
 from unittest.util import _MAX_LENGTH
 from xmlrpc.client import TRANSPORT_ERROR
 from django.contrib.auth.models import AbstractUser
@@ -14,6 +16,7 @@ class Listings(models.Model):
     bid = models.CharField(max_length = 100)
     image = models.ImageField(default ='No Image', upload_to = 'images')
     user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)
+    active = models.BooleanField(default=True)
 
     TECH = 'TCH'
     CLOTHING = 'CLT'
@@ -28,8 +31,8 @@ class Listings(models.Model):
     (FOOD, 'Food'),
     (ART, 'Art'),
     (CLOTHING, 'Clothing'),
-    (UNKNOWN, 'Unknown'),
     (ACCESSORIES, 'Accessories'),
+    (UNKNOWN, 'Unknown'),
     ]
 
     category = models.CharField(max_length = 3, choices = CATEGORY_CHOICES, blank = True)
@@ -49,11 +52,11 @@ class Bids():
 class Comments():
     comment = models.TextField(max_length = 500)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now = False, auto_now_add = False)
     listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user.username} wrote '{self.comment}'' on {self.listing.title}"
-
 
 class Watchlist(models.Model):
     user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)

@@ -1,9 +1,14 @@
 from django.forms import ModelForm
 from django.forms import fields  
-from . import models 
+from . models import *
 from django import forms
 
 class CreateListing(ModelForm):
   class Meta:
-    model = models.Listings
+    model = Listings
+    fields = '__all__'
+
+class CreateComment(ModelForm):
+  class Meta:
+    model = Comments
     fields = '__all__'

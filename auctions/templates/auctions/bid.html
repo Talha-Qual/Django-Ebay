@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %} 
+My current bids
+{% endblock %}
+
+{% block main %}
+
+{% for listing in listings %}
+The title is: {{listing.title}}
+Description: {{listing.description}}
+
+{% endfor %}
+
+{% endblock %}

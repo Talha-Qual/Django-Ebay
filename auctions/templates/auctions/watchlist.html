@@ -3,5 +3,22 @@
 {% block main %}
 <h3>These are the items in your Watchlist!</h3>
 
+<article>
+  {% for item in watching %}
+  {% if item and item.active == 1 %}
+    <section>
+      <a href = "{% url 'view_listing' item.id %}">Title: {{item.title}}</a>
+      <br>
+      Description: {{item.description}}
+      <br>
+      {% if item.image %}
+        <img src = "{{item.image.url}}" alt = "there should be an image here" style = "max-height: 300px;">
+        <br>
+        Category: {{item.category}}
+      {% endif %}
+    </section>
+  {% endif %}
+  {% endfor %}
+</article>
 
 {% endblock %}

@@ -1,0 +1,17 @@
+{% extends "auctions/layout.html" %}
+{% block title %} My Items {% endblock %}
+{% block main %}
+
+TODO
+
+{% for item in listings %}
+    <a href="{% url 'view_listing' item.id %}">
+        <h5>{{ item.title }}</h5>
+        {% if item.active == 0 %}
+          <p>Closed</p>
+        {% endif %}
+        <small>{{ item.timestamp }}</small>
+    </a>
+{% endfor %}
+
+{% endblock %}
