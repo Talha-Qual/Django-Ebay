@@ -21,7 +21,7 @@
 <!-- Bidding Stuff -->
 {% if user.is_authenticated %}
   {% if user != listing.user and listing.active == 1 %}
-  <form action = "{% url 'listing' listing.id %}" method = "POST">
+  <form action = "{% url 'view_listing' listing.id %}" method = "POST">
     {% csrf_token %}
     <input type = "number" name = "amount"
       {% if listing.highestbid > listing.price %}
@@ -73,7 +73,6 @@
 
 <!-- View comments -->
 {% if comments %}
-
   {% for com in comments %}
     {{com.user}}
     {{com.com}}

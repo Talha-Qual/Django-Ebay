@@ -12,8 +12,10 @@ class User(AbstractUser):
 
 class Listings(models.Model):
     title = models.CharField(max_length = 255)
+    price = models.PositiveSmallIntegerField(default = 0)
     description = models.TextField()
     bid = models.CharField(max_length = 100)
+    highestbid = models.PositiveSmallIntegerField(blank=True, default = 0)
     image = models.ImageField(default ='No Image', upload_to = 'images')
     user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
@@ -41,7 +43,7 @@ class Listings(models.Model):
         return f' The title is: {self.title} The content is: {self.description} The current bid is: {self.bid} The caption is: {self.category} The image is: {self.image}' 
 
 
-class Bids():
+class Bids(models.Model):
     offer = models.PositiveSmallIntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
@@ -49,7 +51,7 @@ class Bids():
     def __str__(self):
         return f'{self.user.username} placed a bid for ${self.offer} for {self.listing.title}'
 
-class Comments():
+class Comments(models.Model):
     comment = models.TextField(max_length = 500)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now = False, auto_now_add = False)

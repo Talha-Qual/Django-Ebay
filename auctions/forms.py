@@ -11,4 +11,4 @@ class CreateListing(ModelForm):
 class CreateComment(ModelForm):
   class Meta:
     model = Comments
-    fields = '__all__'
+    fields = ['comment']

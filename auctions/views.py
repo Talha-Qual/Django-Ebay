@@ -116,8 +116,12 @@ def view_listing(request, item):
         if "comment" in request.POST:
             comment_form = CreateComment(request.POST)
             if comment_form.is_valid():
-                input_comment = Comments(user=request.user, input_comment=(comment_form.cleaned_data["create_comment"]), timestamp=timezone.now(), listing=Listings(pk=item))
-                input_comment.save()
+                instance = comment_form.save(commit=False)
+                # input_comment = Comments(user=request.user, input_comment = input_comment, timestamp=timezone.now(), listing=Listings(pk=item))
+                # input_comment.save()
+                instance.user = request.user
+                instance.listing_id = item
+                instance.save()
                 return redirect(reverse("view_listing", args=(item,)))
             else:
                 return render(request, "auctions/listing.html", {
@@ -151,10 +155,14 @@ def view_listing(request, item):
             f = Listings.objects.get(pk = item)
         except Listings.DoesNotExist:
             raise Http404("Listing not found")
-        if watching is not None:
+        try:
             watching = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
-        if bids is not None:
+        except:
+            watching = None
+        try:
             bids = Bids.objects.filter(listing_id = item)
+        except:
+            bids = None
         try:
             listing = Listings.objects.get(pk=item)
             winner = Bids.objects.filter(listing_id = item).last()
