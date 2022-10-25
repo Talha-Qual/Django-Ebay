@@ -72,13 +72,17 @@
 <!-- Comments Stuff -->
 
 <!-- View comments -->
+<br>
+Comments:
 {% if comments %}
-  {% for com in comments %}
-    {{com.user}}
-    {{com.com}}
-    {{com.timestamp}}
+  {% for comment in comments %}
+    {{comment.user}}
+    {{ comment.comment }}
+    {{comment.timestamp}}
   {% endfor %}
 {% endif %}
+
+
 
 <!-- submit comments -->
 {% if user.is_authenticated %}

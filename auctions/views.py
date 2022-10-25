@@ -117,8 +117,6 @@ def view_listing(request, item):
             comment_form = CreateComment(request.POST)
             if comment_form.is_valid():
                 instance = comment_form.save(commit=False)
-                # input_comment = Comments(user=request.user, input_comment = input_comment, timestamp=timezone.now(), listing=Listings(pk=item))
-                # input_comment.save()
                 instance.user = request.user
                 instance.listing_id = item
                 instance.save()
