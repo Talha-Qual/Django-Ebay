@@ -125,6 +125,7 @@ def view_listing(request, item):
                 return render(request, "auctions/listing.html", {
                     "comment_form":comment_form
                 })
+        # BIDS not working properly :( 
         if "bid" in request.POST:
             listing = Listings.objects.get(pk = item)
             price = listing.price

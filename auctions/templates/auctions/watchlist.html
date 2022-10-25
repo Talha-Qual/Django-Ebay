@@ -1,13 +1,13 @@
 {% extends "auctions/layout.html" %}
 
 {% block main %}
-<h3>These are the items in your Watchlist!</h3>
+<h2>These are the items in your watchlist!</h2>
 
 <article>
   {% for item in watching %}
   {% if item and item.active == 1 %}
     <section>
-      <a href = "{% url 'view_listing' item.id %}">Title: {{item.title}}</a>
+      Title: {{item.title}}
       <br>
       Description: {{item.description}}
       <br>
@@ -20,8 +20,11 @@
         The category is: {{ category.1 }}
       {% endif %}
       {% endfor %}
+      <br>
+      <a href = "{% url 'view_listing' item.id %}"><button>Check this out!</button></a>
     </section>
   {% endif %}
+  
   {% endfor %}
 </article>
 

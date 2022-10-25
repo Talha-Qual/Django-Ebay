@@ -20,20 +20,22 @@ class Listings(models.Model):
     user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
-    TECH = 'TCH'
+    ELECTRONICS = 'TCH'
     CLOTHING = 'CLT'
     UNKNOWN = 'UNK'
     FOOD = 'FOD'
     ART = 'ART'
+    SHOES = 'SHO'
     ACCESSORIES = 'AC'
 
 
     CATEGORY_CHOICES = [
-    (TECH, 'Technology'),
+    (ELECTRONICS, 'Electronics'),
     (FOOD, 'Food'),
     (ART, 'Art'),
     (CLOTHING, 'Clothing'),
     (ACCESSORIES, 'Accessories'),
+    (SHOES, 'Shoes'),
     (UNKNOWN, 'Unknown'),
     ]
 
