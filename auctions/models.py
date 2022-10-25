@@ -25,7 +25,6 @@ class Listings(models.Model):
     UNKNOWN = 'UNK'
     FOOD = 'FOD'
     ART = 'ART'
-    SHOES = 'SHO'
     ACCESSORIES = 'AC'
 
 
@@ -35,7 +34,6 @@ class Listings(models.Model):
     (ART, 'Art'),
     (CLOTHING, 'Clothing'),
     (ACCESSORIES, 'Accessories'),
-    (SHOES, 'Shoes'),
     (UNKNOWN, 'Unknown'),
     ]
 
