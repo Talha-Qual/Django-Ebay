@@ -5,9 +5,9 @@
 
 <!-- List the listing -->
 <section>
-  {{listing.title}}
+  Title: {{listing.title}}
   <br>
-  {{listing.description}}
+  Description: {{listing.description}}
   <br>
   Price: ${{listing.bid}}
   <br>
@@ -15,7 +15,11 @@
       <img src = "{{listing.image.url}}" alt = "someone forgot to add an image here :( " style = "max-height: 300px;">
       <br>
   {% endif %}
-  The category is: {{listing.category}}
+  {% for category in categories %}
+  {% if listing.category == category.0 %}
+    The category is: {{ category.1 }}
+  {% endif %}
+  {% endfor %}
 </section>
 
 <!-- Bidding Stuff -->
@@ -33,7 +37,7 @@
     <button type = "submit" name = "bid">Bid</button>
   </form>
 
-    {% endif %}
+  {% endif %}
     Original Price: ${{ listing.price }}
     {{ total_bids }} bids total
 
@@ -54,6 +58,7 @@
     <button type="submit" name="close">Close Auction</button>
   </form>
   {% endif %}
+{% endif %}
 
   <!-- Watchlist stuff -->
   {% if watching and watching.active == 1 %}
@@ -67,7 +72,6 @@
       <button type = "submit" name = "watch"> Add this item to your Watchlist!</button>
   </form>
   {% endif %}
-{% endif %}
 
 <!-- Comments Stuff -->
 
@@ -76,20 +80,20 @@
 Comments:
 {% if comments %}
   {% for comment in comments %}
-    {{comment.user}}
-    {{ comment.comment }}
-    {{comment.timestamp}}
+  <section>
+    {{comment.user}} posted: {{ comment.comment }}
+    <br>
+  </section>
   {% endfor %}
 {% endif %}
-
-
 
 <!-- submit comments -->
 {% if user.is_authenticated %}
   <form action = "{% url 'view_listing' listing.id %}" method = "POST">
     {% csrf_token %}
     {{ comment_form }}
-    <button type = "submit" name = "comment">Post</button>
+    <br>
+    <button type = "submit" name = "my_comment">Post</button>
   </form>
 {% endif %}
 {% endblock %}

@@ -113,7 +113,7 @@ def view_listing(request, item):
             watchlist.active = False
             watchlist.save(update_fields=["active"])
             return redirect(reverse("view_listing", args=(item,)))
-        if "comment" in request.POST:
+        if "my_comment" in request.POST:
             comment_form = CreateComment(request.POST)
             if comment_form.is_valid():
                 instance = comment_form.save(commit=False)
@@ -125,7 +125,6 @@ def view_listing(request, item):
                 return render(request, "auctions/listing.html", {
                     "comment_form":comment_form
                 })
-
         if "bid" in request.POST:
             listing = Listings.objects.get(pk = item)
             price = listing.price
@@ -178,7 +177,7 @@ def view_listing(request, item):
 
 @login_required(login_url='login')
 def personal_listings(request):
-    return render(request, "auctions/personal_listings", {
+    return render(request, "auctions/personal_listings.html", {
         "listings": Listings.objects.filter(user=request.user)
     })
 
@@ -206,7 +205,7 @@ def category_listing(request, selection):
         category = Listings.objects.filter(category = selection)
     except:
         category = None
-    return render(request, "auctions/category_listing.html", {"category": category, "selection": selection})
+    return render(request, "auctions/category_listing.html", {"category": category, "selection": selection, "categories": Listings.CATEGORY_CHOICES})
 
 @login_required(login_url='login')
 def watchlist_page(request):

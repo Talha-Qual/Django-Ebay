@@ -14,8 +14,12 @@
       {% if item.image %}
         <img src = "{{item.image.url}}" alt = "there should be an image here" style = "max-height: 300px;">
         <br>
-        Category: {{item.category}}
       {% endif %}
+      {% for category in categories %}
+      {% if item.category == category.0 %}
+        The category is: {{ category.1 }}
+      {% endif %}
+      {% endfor %}
     </section>
   {% endif %}
   {% endfor %}
