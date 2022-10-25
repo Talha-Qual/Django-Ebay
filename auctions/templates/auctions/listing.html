@@ -28,25 +28,23 @@
     {% csrf_token %}
     <input type = "number" name = "amount"
       {% if listing.highestbid > listing.price %}
-      minimum = "{{listing.highestbid}}" value = "{{listing.highestbid}}"
+        min = "{{listing.highestbid}}" value = "{{listing.highestbid}}"
       {% else %}
-      minimum = "{{ listing.price }}" value = "{{ listing.price }}"
-      {% endif %}
-    >
+        min = "{{ listing.price }}" value = "{{ listing.price }}"
+      {% endif %}>
     <button type = "submit" name = "bid">Bid</button>
   </form>
-
   {% endif %}
-    Original Price: ${{ listing.price }}
-    <br>
-    {% if user != listing.user %} 
+
+  Original Price: ${{ listing.price }}
+  <br>
+  {% if user != listing.user %} 
     {% if winner.user_id == user.id %}
-    Congratulations, you win!
+      Congratulations, you win!
     {% elif user.id == bids.user_id %}
-    Your bid is too low to win the current auction :(
-      {% endif %}
+      Your bid is too low to win the current auction :(
     {% endif %}
-{% endif %}
+  {% endif %}
 
 <!-- Check Users -->
 {% if user == listing.user %}
@@ -56,8 +54,8 @@
     <button type="submit" name="close">Close Auction</button>
   </form>
   {% endif %}
-{% endif %}
 
+  {% else %}
   <!-- Watchlist stuff -->
   {% if watching and watching.active == 1 %}
   <form action = "{% url 'view_listing' listing.id %}" method = "POST">
@@ -70,7 +68,8 @@
       <button type = "submit" name = "watch"> Add this item to your Watchlist!</button>
   </form>
   {% endif %}
-
+  {% endif %}
+  {% endif %}
 <!-- Comments Stuff -->
 
 <!-- View comments -->

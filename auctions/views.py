@@ -130,12 +130,15 @@ def view_listing(request, item):
             listing = Listings.objects.get(pk = item)
             price = listing.price
             bid = int(request.POST.get("amount"))
+            min = price
             try:
-                highest = Bids(user_id = request.user.id).last()
+                highest = Bids(user_id = request.user.id, listing_id = item).last()
             except:
                 highest = 0
+
             if bid < price and bid < highest:
                 return render(request, "auctions/view_listing.html")
+                # add error message here
             else:
                 bids = Bids(user_id=request.user.id, listing_id = item, offer = bid)
                 bids.save()
@@ -161,11 +164,11 @@ def view_listing(request, item):
             bids = Bids.objects.filter(listing_id = item)
         except:
             bids = None
-        try:
-            listing = Listings.objects.get(pk=item)
-            winner = Bids.objects.filter(listing_id = item).last()
-        except:
+        listing = Listings.objects.get(pk=item)
+        if listing.active == True:
             winner = None
+        else:
+            winner = Bids.objects.filter(listing_id = item).last()
         return render(request, "auctions/listing.html", {
             "bid": bids,
             "winner": winner,
