@@ -6,7 +6,7 @@ from django import forms
 class CreateListing(ModelForm):
   class Meta:
     model = Listings
-    fields = ['title', 'price', 'description', 'image', 'category', 'active', 'user', 'highestbid']
+    fields = ['title', 'description', 'price', 'image', 'category']
 
 class CreateComment(ModelForm):
   class Meta:

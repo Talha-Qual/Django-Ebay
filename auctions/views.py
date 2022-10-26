@@ -1,3 +1,4 @@
+from os import access
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -12,11 +13,11 @@ from django.urls import reverse
 from .models import User, Listings, Watchlist, Bids, Comments
 
 
-
 def index(request):
+    listings = Listings.objects.filter(active=1)
     return render(request, "auctions/index.html", {
-        "listings": Listings.objects.all(),
-        "categories": Listings.CATEGORY_CHOICES,
+        "listings": listings,
+        "length": len(listings)
     }
     )
 
@@ -79,11 +80,13 @@ def create_listing(request):
     if request.method == "POST":
         form = CreateListing(request.POST, request.FILES)
         if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.save()
             # title = form.cleaned_data['title']
             # content = form.cleaned_data['content']
             # bid = form.cleaned_data['bid']
             # Find a way to save the entry here
-            form.save()
             return redirect('index')
         else:
             return render(request, "auctions/create_listing.html", {"form": form})
@@ -119,6 +122,7 @@ def view_listing(request, item):
                 instance = comment_form.save(commit=False)
                 instance.user = request.user
                 instance.listing_id = item
+                instance.timestamp = timezone.localtime()
                 instance.save()
                 return redirect(reverse("view_listing", args=(item,)))
             else:
@@ -136,11 +140,11 @@ def view_listing(request, item):
             except:
                 highest = 0
 
-            if bid < price and bid < highest:
+            if bid < price and bid <= highest:
                 return render(request, "auctions/view_listing.html")
                 # add error message here
             else:
-                bids = Bids(user_id=request.user.id, listing_id = item, offer = bid)
+                bids = Bids(user_id=request.user.id, listing_id = item, bid = bid)
                 bids.save()
                 highestbid = Listings.objects.get(pk=item)
                 highestbid.highestbid = bid
@@ -150,7 +154,7 @@ def view_listing(request, item):
             listing = Listings.objects.get(pk = item)
             listing.active = False
             listing.save(update_fields=["active"])
-            return redirect(reverse("personal_listings"))
+            return redirect(reverse("index"))
     else:
         try:
             f = Listings.objects.get(pk = item)
@@ -163,14 +167,15 @@ def view_listing(request, item):
         try:
             bids = Bids.objects.filter(listing_id = item)
         except:
-            bids = None
-        listing = Listings.objects.get(pk=item)
-        if listing.active == True:
-            winner = None
-        else:
+            bids = 0
+        try:
+            listing = Listings.objects.get(pk=item)
             winner = Bids.objects.filter(listing_id = item).last()
+        except:
+            winner = None
         return render(request, "auctions/listing.html", {
             "bid": bids,
+            "total_bids": len(bids),
             "winner": winner,
             "listing": f,
             "watching": watching,
@@ -181,7 +186,17 @@ def view_listing(request, item):
 
 @login_required(login_url='login')
 def personal_listings(request):
+    winners = []
+    listings = Listings.objects.filter(active=0)
+    for listing in listings:
+        winner = Bids.objects.filter(listing_id=listing.id).last()
+        winners.append(winner)
+    zipped = zip(listings, winners)
     return render(request, "auctions/personal_listings.html", {
+        "listings": listings,
+        "length": len(listings),
+        "winners": winners,
+        "zipped": zipped,
         "listings": Listings.objects.filter(user=request.user)
     })
 

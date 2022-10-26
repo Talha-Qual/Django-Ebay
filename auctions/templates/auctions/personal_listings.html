@@ -2,16 +2,29 @@
 {% block title %} My Items {% endblock %}
 {% block main %}
 
-TODO
+{% if length == 0 %}
+<h3> You don't have any closed listings </h3>
+{% else %}
 
-{% for item in listings %}
-    <a href="{% url 'view_listing' item.id %}">
-        <h5>{{ item.title }}</h5>
-        {% if item.active == 0 %}
-          <p>Closed</p>
-        {% endif %}
-        {{ item.timestamp }}
-    </a>
+<article>
+  {% for listing, winner in zipped %}
+  <section>
+    {% if listing.image == 'No Image' %}
+    No image here :(
+    {% else %}
+    <img src = "{{listing.image.url}}" alt = "{{listing.image}}" style = "max-height: 300px;" />
+    {% endif %}
+    <h2> {{listing.title}} </h2>
+    {% if winner.bid == listing.highestbid %}
+    Sold to {{winner.user}} for: ${{listing.highestbid}}
+    {% else %} 
+    Sold for: ${{listing.highestbid}}
+    {% endif %}
+    <br>
+    {{listing.description}}
+  </section>
+</article>
+
 {% endfor %}
-
+{% endif %}
 {% endblock %}

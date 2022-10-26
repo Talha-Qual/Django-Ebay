@@ -11,13 +11,12 @@ class User(AbstractUser):
     pass
 
 class Listings(models.Model):
-    title = models.CharField(max_length = 255)
+    title = models.CharField(max_length = 150)
     price = models.PositiveSmallIntegerField(default = 0)
-    description = models.TextField()
-    bid = models.CharField(max_length = 100)
+    description = models.TextField(blank = True, max_length = 200)
     highestbid = models.PositiveSmallIntegerField(blank=True, default = 0)
     image = models.ImageField(default ='No Image', upload_to = 'images')
-    user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, default = None, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
 
     ELECTRONICS = 'TCH'
@@ -37,16 +36,16 @@ class Listings(models.Model):
     (UNKNOWN, 'Unknown'),
     ]
 
-    category = models.CharField(max_length = 3, choices = CATEGORY_CHOICES, blank = True)
+    category = models.CharField(max_length = 3, choices = CATEGORY_CHOICES, default = 'ELECTRONICS')
 
     def __str__(self):
         return f' The title is: {self.title} The content is: {self.description} The current bid is: {self.bid} The caption is: {self.category} The image is: {self.image}' 
 
 
 class Bids(models.Model):
-    offer = models.PositiveSmallIntegerField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
+    bid = models.PositiveSmallIntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default = None)
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE, default = None)
 
     def __str__(self):
         return f'{self.user.username} placed a bid for ${self.offer} for {self.listing.title}'
@@ -54,7 +53,7 @@ class Bids(models.Model):
 class Comments(models.Model):
     comment = models.TextField(blank = True, max_length = 500)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default = None)
-    timestamp = models.DateTimeField(auto_now = False, auto_now_add = False, null = True)
+    timestamp = models.DateTimeField(default = None, auto_now = False, auto_now_add = False)
     listing = models.ForeignKey(Listings, on_delete=models.CASCADE, default = None)
 
 
@@ -62,8 +61,8 @@ class Comments(models.Model):
         return f"{self.user.username} wrote '{self.comment}'' on {self.listing.title}"
 
 class Watchlist(models.Model):
-    user = models.ForeignKey(User, blank = True, null = True, on_delete=models.CASCADE)
-    listing = models.ForeignKey(Listings, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default = None)
+    listing = models.ForeignKey(Listings, on_delete=models.CASCADE, default = None)
     active = models.BooleanField(default=False)
 
 

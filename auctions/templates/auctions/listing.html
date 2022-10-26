@@ -10,6 +10,8 @@
   <br>
   Price: ${{listing.price}}
   <br>
+  Posted by: {{ listing.user }}
+  <br>
   {% if listing.image %}
       <img src = "{{listing.image.url}}" alt = "someone forgot to add an image here :( " style = "max-height: 300px;">
       <br>
@@ -19,7 +21,24 @@
     The category is: {{ category.1 }}
   {% endif %}
   {% endfor %}
+  <br>
+  Original Price: ${{ listing.price }}
 </section>
+
+<!-- Watchlist stuff -->
+<div>
+  {% if watching and watching.active == 1 %}
+    <form action = "{% url 'view_listing' listing.id %}" method = "POST">
+      {% csrf_token %}
+      <button type = "submit" name = "unwatch"> Remove from Watchlist </button>
+    </form>
+    {% elif not watching or watching.active == 0 %}
+    <form action = "{% url 'view_listing' listing.id %}" method = "POST">
+      {% csrf_token %}
+      <button type = "submit" name = "watch"> Add this item to your Watchlist!</button>
+    </form>
+    {% endif %}
+</div>
 
 <!-- Bidding Stuff -->
 {% if user.is_authenticated %}
@@ -27,49 +46,39 @@
   <form action = "{% url 'view_listing' listing.id %}" method = "POST">
     {% csrf_token %}
     <input type = "number" name = "amount"
-      {% if listing.highestbid > listing.price %}
-        min = "{{listing.highestbid}}" value = "{{listing.highestbid}}"
-      {% else %}
-        min = "{{ listing.price }}" value = "{{ listing.price }}"
-      {% endif %}>
+    {% if listing.highestbid > listing.price %}
+      min = "{{listing.highestbid|add:"1"}}" value = "{{listing.highestbid|add:"1"}}"
+    {% else %}
+      min = "{{ listing.price|add:"1" }}" value = "{{ listing.price|add:"1"}}"
+    {% endif %} >
     <button type = "submit" name = "bid">Bid</button>
   </form>
   {% endif %}
 
-  Original Price: ${{ listing.price }}
+  {% if total_bids == 0 %}
+  There are no bids as of yet.
   <br>
-  {% if user != listing.user %} 
+  {% else %}
+  There are {{ total_bids }} bids total.
+  {% endif %}
+
+    {% if user != listing.user %} 
     {% if winner.user_id == user.id %}
-      Congratulations, you win!
+      At the moment, you have the highest bid at ${{ listing.highestbid }}!
     {% elif user.id == bids.user_id %}
       Your bid is too low to win the current auction :(
     {% endif %}
   {% endif %}
 
-<!-- Check Users -->
-{% if user == listing.user %}
-  {% if listing.active == 1 %}
-  <form  action="{% url 'view_listing' listing.id %}" method="POST">
-    {% csrf_token %}
-    <button type="submit" name="close">Close Auction</button>
-  </form>
+
+  {% if user == listing.user and listing.active == 1 %}
+    <form  action="{% url 'view_listing' listing.id %}" method="POST">
+      {% csrf_token %}
+      <button type="submit" name="close">Close Auction</button>
+    </form>
+  {% endif %}
   {% endif %}
 
-  {% else %}
-  <!-- Watchlist stuff -->
-  {% if watching and watching.active == 1 %}
-  <form action = "{% url 'view_listing' listing.id %}" method = "POST">
-    {% csrf_token %}
-    <button type = "submit" name = "unwatch"> Remove from Watchlist </button>
-  </form>
-  {% elif not watching or watching.active == 0 %}
-  <form action = "{% url 'view_listing' listing.id %}" method = "POST">
-      {% csrf_token %}
-      <button type = "submit" name = "watch"> Add this item to your Watchlist!</button>
-  </form>
-  {% endif %}
-  {% endif %}
-  {% endif %}
 <!-- Comments Stuff -->
 
 <!-- View comments -->
