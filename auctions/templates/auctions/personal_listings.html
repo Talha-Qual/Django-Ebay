@@ -2,7 +2,7 @@
 {% block title %} My Items {% endblock %}
 {% block main %}
 
-{% if length == 0 %}
+{% if length == 0 and user == listing.user %}
 <h3> You don't have any closed listings </h3>
 {% else %}
 
