@@ -11,7 +11,11 @@
         <br>
         Description: {{listing.description}}
         <br>
-        Price: ${{listing.highestbid}}
+        {% if listing.highestbid < listing.price %}
+          Price: ${{listing.price}}
+        {% else %}
+          Price: ${{listing.highestbid}}
+        {% endif %}
         <br>
         {% if listing.image %}
             <img src = "{{listing.image.url}}" alt = "there should be an image here" style = "max-height: 300px;">

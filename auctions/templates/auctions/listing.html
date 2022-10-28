@@ -8,7 +8,11 @@
   <br>
   Description: {{listing.description}}
   <br>
-  Price: ${{listing.highestbid}}
+  {% if listing.highestbid < listing.price %}
+    Price: ${{listing.price}}
+  {% else %}
+    Price: ${{listing.highestbid}}
+  {% endif %}
   <br>
   Posted by: {{ listing.user }}
   <br>
@@ -61,13 +65,16 @@
   {% else %}
   There are {{ total_bids }} bids total.
   {% endif %}
+  <br>
 
     {% if user != listing.user %} 
-    {% if winner.user_id == user.id %}
-      At the moment, you have the highest bid at ${{ listing.highestbid }}!
-    {% elif user.id == bids.user_id %}
-      Your bid is too low to win the current auction :(
-    {% endif %}
+      {% if winner.user_id == user.id and listing.active == 0 %}
+        You won this item for ${{listing.highestbid}} dollars!
+      {% elif winner.user_id == user.id %}
+        At the moment, you have the highest bid at ${{ listing.highestbid }}!
+      {% elif user.id == bids.user_id %}
+        Your bid is too low to win the current auction :(
+      {% endif %}
   {% endif %}
 
 
@@ -77,6 +84,11 @@
       <button type="submit" name="close">Close Auction</button>
     </form>
   {% endif %}
+  <br>
+  {% if user == listing.user and listing.active == 0 %}
+    This item was sold for ${{listing.highestbid}} dollars!
+  {% endif %}
+
   {% endif %}
 
 <!-- Comments Stuff -->

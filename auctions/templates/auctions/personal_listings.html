@@ -2,29 +2,92 @@
 {% block title %} My Items {% endblock %}
 {% block main %}
 
-{% if length == 0 and user == listing.user %}
-<h3> You don't have any closed listings </h3>
-{% else %}
-
 <article>
-  {% for listing, winner in zipped %}
-  <section>
-    {% if listing.image == 'No Image' %}
-    No image here :(
+<h2 >Past and Present Items</h2>
+<section>
+<h3>Still open!</h3>
+{% for item in inventory %}
+<div>
+  {% if item.active == 1 %}
+  <a href="{% url 'view_listing' item.id %}">
+    <h5>{{ item.title }}</h5>
+  </a>
+  {% if item.image == 'No image' %}
+    <p>No image</p>
+
     {% else %}
-    <img src = "{{listing.image.url}}" alt = "{{listing.image}}" style = "max-height: 300px;" />
-    {% endif %}
-    <h2> {{listing.title}} </h2>
-    {% if winner.bid == listing.highestbid %}
-    Sold to {{winner.user}} for: ${{listing.highestbid}}
-    {% else %} 
-    Sold for: ${{listing.highestbid}}
+    <img
+      src="{{item.image.url}}"
+      alt="{{item.image}}"
+      style="max-height: 75px"
+    />
     {% endif %}
     <br>
-    {{listing.description}}
-  </section>
+  Description: {{item.description}}
+  {% endif %}
+</div>
+{% endfor %}
+</section>
+
+<section>
+<h3>Sold</h3>
+
+{% for item in inventory %}
+<div>
+  {% if item.active == 0 %}
+    <a href="{% url 'view_listing' item.id %}">
+      <h5>{{ item.title }}</h5>
+    </a>
+    {% if item.image == 'No image' %}
+    <p>No image</p>
+
+    {% else %}
+    <img
+      src="{{item.image.url}}"
+      alt="{{item.image}}"
+      style="max-height: 75px"
+    />
+    {% endif %}
+    <br>
+    Description: {{item.description}}
+  {% endif %}
+</div>
+{% endfor %}
+</section>
+<section>
+
+<h3>Won!</h3>
+
+{% for listing, winner in zipped %}  
+  {% if user == winner.user%}
+  {% if listing.active == 0 %}
+    <a href="{% url 'view_listing' listing.id %}">
+      <h5>{{ listing.title }}</h5>
+    </a>
+  {% endif %}
+    {% if listing.image == 'No image' %}
+    <p>No image</p>
+
+    {% else %}
+    <img
+      src="{{listing.image.url}}"
+      alt="{{listing.image}}"
+      style="max-height: 75px"
+    />
+    {% endif %}
+    <br>
+    {% if winner.bid == listing.highestbid %}
+      Bought For: ${{listing.highestbid}}
+    {% endif %}
+    <br>
+  Description: {{listing.description}}
+  <br>
+  <br>
+  <br>
+{% endif %}
+{% endfor %}
+</section>
 </article>
 
-{% endfor %}
-{% endif %}
 {% endblock %}
+

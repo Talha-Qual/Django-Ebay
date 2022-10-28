@@ -48,7 +48,7 @@ class Bids(models.Model):
     listing = models.ForeignKey(Listings, on_delete=models.CASCADE, default = None)
 
     def __str__(self):
-        return f'{self.user.username} placed a bid for ${self.offer} for {self.listing.title}'
+        return f'{self.user.username} placed a bid for ${self.bid} for {self.listing.title}'
 
 class Comments(models.Model):
     comment = models.TextField(blank = True, max_length = 500)

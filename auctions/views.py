@@ -129,7 +129,6 @@ def view_listing(request, item):
                 return render(request, "auctions/listing.html", {
                     "comment_form":comment_form
                 })
-        # BIDS not working properly :( 
         if "bid" in request.POST:
             listing = Listings.objects.get(pk = item)
             price = listing.price
@@ -193,12 +192,10 @@ def personal_listings(request):
         winners.append(winner)
     zipped = zip(listings, winners)
     return render(request, "auctions/personal_listings.html", {
-        "listings": listings,
-        "length": len(listings),
-        "winners": winners,
-        "zipped": zipped,
-        "listings": Listings.objects.filter(user=request.user)
-    })
+    "inventory": Listings.objects.filter(user=request.user),
+    "winners": winners,
+    "zipped": zipped,
+    "length": len(listings)})
 
 @login_required(login_url='login')
 def categories_view(request):
