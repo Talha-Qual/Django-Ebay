@@ -39,7 +39,9 @@ class Listings(models.Model):
     category = models.CharField(max_length = 3, choices = CATEGORY_CHOICES, default = 'ELECTRONICS')
 
     def __str__(self):
-        return f' The title is: {self.title} The content is: {self.description} The current bid is: {self.bid} The caption is: {self.category} The image is: {self.image}' 
+        # There is no bid field; the following breaks the admin panel
+        # return f' The title is: {self.title} The content is: {self.description} The current bid is: {self.bid} The caption is: {self.category} The image is: {self.image}' 
+        return f' The title is: {self.title} The content is: {self.description} The caption is: {self.category} The image is: {self.image}' 
 
 
 class Bids(models.Model):

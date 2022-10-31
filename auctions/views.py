@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from .forms import CreateComment, CreateListing
 from http.client import HTTPResponse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from django.urls import reverse
 
@@ -135,12 +135,14 @@ def view_listing(request, item):
             price = listing.price
             bid = int(request.POST.get("amount"))
             min = price
+            # pretty sure that the following code is always causing highest to be set to 0
             try:
                 highest = Bids(user_id = request.user.id, listing_id = item).last()
             except:
                 highest = 0
 
             if bid < price and bid <= highest:
+                # pretty sure this code is noever going to get run
                 return render(request, "auctions/view_listing.html")
                 # add error message here
             else:
@@ -153,26 +155,40 @@ def view_listing(request, item):
         if "close" in request.POST:
             listing = Listings.objects.get(pk = item)
             listing.active = False
+            # pretty sure that django is smart enough to know which fields on an object have changed
             listing.save(update_fields=["active"])
             return redirect(reverse("index"))
     else:
-        try:
-            f = Listings.objects.get(pk = item)
-        except Listings.DoesNotExist:
-            raise Http404("Listing not found")
+        f = get_object_or_404(Listings, pk = item)
+        # try:
+        #     f = Listings.objects.get(pk = item)
+        # except Listings.DoesNotExist:
+        #     raise Http404("Listing not found")
+
         try:
             watching = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
         except:
             watching = None
-        try:
-            bids = Bids.objects.filter(listing_id = item)
-        except:
-            bids = 0
-        try:
-            listing = Listings.objects.get(pk=item)
-            winner = Bids.objects.filter(listing_id = item).last()
-        except:
-            winner = None
+
+
+        # filter will return an empty list. without looking as listing.html, 
+        # i don't see why bids=0 is better than bigs=[]. but just looking at 
+        # listing.html, you don't use bids
+        # try:
+        #     bids = Bids.objects.filter(listing_id = item)
+        # except:
+        #     bids = 0
+        bids = Bids.objects.filter(listing_id = item)
+
+        # you don't need listing=..., and if you did, you have it already in variable f.
+        # The call to filter().last() won't raise an exception
+        # try:
+        #     listing = Listings.objects.get(pk=item)
+        #     winner = Bids.objects.filter(listing_id = item).last()
+        # except:
+        #     winner = None
+
+        winner = Bids.objects.filter(listing_id = item).last()
         return render(request, "auctions/listing.html", {
             "bid": bids,
             "total_bids": len(bids),
@@ -185,6 +201,7 @@ def view_listing(request, item):
             })
 
 @login_required(login_url='login')
+# makes no sense torequire login, if there's is no code that relates to the logged in user!
 def personal_listings(request):
     winners = []
     listings = Listings.objects.filter(active=0)
@@ -200,17 +217,20 @@ def personal_listings(request):
         "listings": Listings.objects.filter(user=request.user)
     })
 
-@login_required(login_url='login')
+#@login_required(login_url='login')
 def categories_view(request):
-    try:
-        category = Listings.objects.filter(category = category, active=True)
-    except:
-        category = None
     return render(request, "auctions/categories.html", {
-        "listings": Listings.objects.all(),
-        "category": category,
         "categories": Listings.CATEGORY_CHOICES
         })
+    # try:
+    #     category = Listings.objects.filter(category = category, active=True)
+    # except:
+    #     category = None
+    # return render(request, "auctions/categories.html", {
+    #     "listings": Listings.objects.all(),
+    #     "category": category,
+    #     "categories": Listings.CATEGORY_CHOICES
+    #     })
 
 @login_required(login_url='login')
 def bids_page(request):
@@ -218,13 +238,17 @@ def bids_page(request):
         "bids": Bids.objects.filter(user_id = request.user.id),
     })
 
-@login_required(login_url='login')
-def category_listing(request, selection):
-    try:
-        category = Listings.objects.filter(category = selection)
-    except:
-        category = None
-    return render(request, "auctions/category_listing.html", {"category": category, "selection": selection, "categories": Listings.CATEGORY_CHOICES})
+def category_listing(request, category_id):
+    listings = Listings.objects.filter(category = category_id)
+    return render(request, "auctions/category_listing.html", {
+            "listings": listings})
+# @login_required(login_url='login')
+# def category_listing(request, selection):
+#     try:
+#         category = Listings.objects.filter(category = selection)
+#     except:
+#         category = None
+#     return render(request, "auctions/category_listing.html", {"category": category, "selection": selection, "categories": Listings.CATEGORY_CHOICES})
 
 @login_required(login_url='login')
 def watchlist_page(request):

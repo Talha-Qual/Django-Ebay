@@ -6,7 +6,7 @@
 </h2>
 
 <article>
-  {% for item in category %}
+  {% for item in listings %}
 <section>
   <a href = "{% url 'view_listing' item.id %}">Title: {{item.title}}</a>
   <br>
