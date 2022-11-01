@@ -108,7 +108,7 @@ def view_listing(request, item):
                 watchlist.active = True
                 watchlist.save(update_fields=["active"])
                 data = {
-                    'watchlist_status': watchlist
+                    'watchlist_status': True
                 }
                 return JsonResponse(data)
                 #return redirect(reverse("view_listing", args = (item,)))
@@ -125,7 +125,7 @@ def view_listing(request, item):
             watchlist.active = False
             watchlist.save(update_fields=["active"])
             data = {
-                'watchlist_status': watchlist
+                'watchlist_status': False
             }
             return JsonResponse(data)
             #return redirect(reverse("view_listing", args=(item,)))

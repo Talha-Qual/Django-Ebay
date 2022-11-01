@@ -1,7 +1,9 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
+
 
 {% block main %}
-
+<script src="{% static 'auctions/auctions.js' %}"></script>
 <!-- List the listing -->
 <section>
   Title: {{listing.title}}
@@ -36,15 +38,19 @@
       {% csrf_token %}
       <button type = "submit" name = "unwatch" id ="watchlist"> Remove from Watchlist </button>
     </form>
-    <img
+    <!-- <img
     id = "bell"
     src = "/media/images/bell_icon.png"
-    style = "max-height: 25px;">
+    style = "max-height: 25px;"> -->
     {% elif not watching or watching.active == 0 %}
     <form action = "{% url 'view_listing' listing.id %}" method = "POST">
       {% csrf_token %}
       <button type = "submit" name = "watch"> Add this item to your Watchlist!</button>
     </form>
+    <!-- <img
+    id = "no_bell"
+    src = "/media/images/crossed_out_bell.jpg"
+    style = "max-height: 25px;"> -->
     {% endif %}
 </div>
 
