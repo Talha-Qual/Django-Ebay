@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.http import JsonResponse
 from .forms import CreateComment, CreateListing
 from http.client import HTTPResponse
 from django.http import HttpResponseRedirect
@@ -106,16 +107,28 @@ def view_listing(request, item):
                 watchlist = Watchlist.objects.get(user_id =request.user.id, listing_id = item)
                 watchlist.active = True
                 watchlist.save(update_fields=["active"])
-                return redirect(reverse("view_listing", args = (item,)))
+                data = {
+                    'watchlist_status': watchlist
+                }
+                return JsonResponse(data)
+                #return redirect(reverse("view_listing", args = (item,)))
             except:
                 watchlist = Watchlist(user_id = request.user.id, listing_id = item, active=True)
                 watchlist.save()
-                return redirect(reverse("view_listing", args = (item,)))
+                data = {
+                    'watchlist_status': watchlist
+                }
+                return JsonResponse(data)
+                #return redirect(reverse("view_listing", args = (item,)))
         if "unwatch" in request.POST:
             watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
             watchlist.active = False
             watchlist.save(update_fields=["active"])
-            return redirect(reverse("view_listing", args=(item,)))
+            data = {
+                'watchlist_status': watchlist
+            }
+            return JsonResponse(data)
+            #return redirect(reverse("view_listing", args=(item,)))
         if "my_comment" in request.POST:
             comment_form = CreateComment(request.POST)
             if comment_form.is_valid():

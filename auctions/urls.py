@@ -13,6 +13,5 @@ urlpatterns = [
     path("categories_view", views.categories_view, name="categories_view"),
     path("category_listing/<str:selection>", views.category_listing, name="category_listing"),
     path("watchlist_page", views.watchlist_page, name="watchlist_page"),
-    path("my_bids", views.bids_page, name="bids")
-
+    path("my_bids", views.bids_page, name="bids"),
 ]
