@@ -1,93 +1,91 @@
 {% extends "auctions/layout.html" %}
 {% block title %} My Items {% endblock %}
+
 {% block main %}
-
-<article>
 <h2 >Past and Present Items</h2>
-<section>
-<h3>Still open!</h3>
-{% for item in inventory %}
-<div>
-  {% if item.active == 1 %}
-  <a href="{% url 'view_listing' item.id %}">
-    <h5>{{ item.title }}</h5>
-  </a>
-  {% if item.image == 'No image' %}
-    <p>No image</p>
 
-    {% else %}
-    <img
-      src="{{item.image.url}}"
-      alt="{{item.image}}"
-      style="max-height: 75px"
-    />
-    {% endif %}
-    <br>
-  Description: {{item.description}}
-  {% endif %}
-</div>
-{% endfor %}
-</section>
-
-<section>
-<h3>Sold</h3>
-
-{% for item in inventory %}
-<div>
-  {% if item.active == 0 %}
+<div id = "accordion">
+  <h3>Still open!</h3>
+  <div>
+  {% for item in inventory %} 
+    {% if item.active == 1 %}
     <a href="{% url 'view_listing' item.id %}">
       <h5>{{ item.title }}</h5>
     </a>
     {% if item.image == 'No image' %}
-    <p>No image</p>
+      <p>No image</p>
 
-    {% else %}
-    <img
-      src="{{item.image.url}}"
-      alt="{{item.image}}"
-      style="max-height: 75px"
-    />
-    {% endif %}
-    <br>
+      {% else %}
+      <img
+        src="{{item.image.url}}"
+        alt="{{item.image}}"
+        style="max-height: 75px"
+      />
+      {% endif %}
+      <br>
     Description: {{item.description}}
-  {% endif %}
+    {% endif %}
+  {% endfor %}
 </div>
-{% endfor %}
-</section>
-<section>
+  <h3>Sold</h3>
+<div>
+  {% for item in inventory %}
+    {% if item.active == 0 %}
+      <a href="{% url 'view_listing' item.id %}">
+        <h5>{{ item.title }}</h5>
+      </a>
+      {% if item.image == 'No image' %}
+      <p>No image</p>
 
-<h3>Won!</h3>
+      {% else %}
+      <img
+        src="{{item.image.url}}"
+        alt="{{item.image}}"
+        style="max-height: 75px"
+      />
+      {% endif %}
+      <br>
+      Description: {{item.description}}
+    {% endif %}
+  {% endfor %}
+</div>
 
-{% for listing, winner in zipped %}  
-  {% if user == winner.user%}
-  {% if listing.active == 0 %}
-    <a href="{% url 'view_listing' listing.id %}">
-      <h5>{{ listing.title }}</h5>
-    </a>
+  <h3>Won!</h3>
+<div>
+  {% for listing, winner in zipped %}  
+    {% if user == winner.user%}
+    {% if listing.active == 0 %}
+      <a href="{% url 'view_listing' listing.id %}">
+        <h5>{{ listing.title }}</h5>
+      </a>
+    {% endif %}
+      {% if listing.image == 'No image' %}
+      <p>No image</p>
+
+      {% else %}
+      <img
+        src="{{listing.image.url}}"
+        alt="{{listing.image}}"
+        style="max-height: 75px"
+      />
+      {% endif %}
+      <br>
+      {% if winner.bid == listing.highestbid %}
+        Bought For: ${{listing.highestbid}}
+      {% endif %}
+      <br>
+    Description: {{listing.description}}
+    <br>
+    <br>
+    <br>
   {% endif %}
-    {% if listing.image == 'No image' %}
-    <p>No image</p>
+  {% endfor %}
+</div>
+</div>
 
-    {% else %}
-    <img
-      src="{{listing.image.url}}"
-      alt="{{listing.image}}"
-      style="max-height: 75px"
-    />
-    {% endif %}
-    <br>
-    {% if winner.bid == listing.highestbid %}
-      Bought For: ${{listing.highestbid}}
-    {% endif %}
-    <br>
-  Description: {{listing.description}}
-  <br>
-  <br>
-  <br>
-{% endif %}
-{% endfor %}
-</section>
-</article>
+<script>
+  $( "#accordion" ).accordion();
+</script>
 
 {% endblock %}
 

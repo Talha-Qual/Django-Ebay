@@ -54,14 +54,19 @@
     {% endif %}
 </div>
 
-<form id = "watchlist-status-form" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
-  {% csrf_token %}
-  {% if watching and watching.active == 1 %}
-    <input type = "image" src = "/media/images/crossed_out_bell.jpg" style="max-height:50px;" id = "no-bell" >
-  {% elif not watching or watching.active == 0 %}
+<form id = "watchlist-add-form" action = "{% url 'watchlist_add' listing.id %}" method = "GET">
+  <!-- {% csrf_token %} -->
+  {% if not watching or watching.active == 0 %}
   <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
 </form>
-{% endif %}
+  {% endif %}
+
+<form id = "watchlist-remove-form" action = "{% url 'watchlist_remove' listing.id %}" method = "GET">
+  <!-- {% csrf_token %} -->
+  {% if watching and watching.active == 1 %}
+    <input type = "image" src = "/media/images/crossed_out_bell.jpg" style="max-height:50px;" id = "no-bell" >
+</form>
+  {% endif %}
 
 <!-- Bidding Stuff -->
 {% if user.is_authenticated %}

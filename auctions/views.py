@@ -233,16 +233,14 @@ def watchlist_page(request):
         watching = 0
     return render(request, "auctions/watchlist.html", {"watching": watching, "watchlist": len(Watchlist.objects.filter(user_id=request.user.id)), "categories": Listings.CATEGORY_CHOICES})
 
-def api_watchlist_toggle(request, item):
-    if request.method == "POST":
-        if "watch" in request.POST:
-            watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
-            watchlist.active = True
-            watchlist.save(update_fields=["active"])
-            return JsonResponse({"current_status": "on"})
-        if "unwatch" in request.POST:
-            watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
-            watchlist.active = False
-            watchlist.save(update_fields=["active"])
-            return JsonResponse({"current_status": "off"})
+def api_watchlist_add(request, item):
+    watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
+    watchlist.active = True
+    watchlist.save(update_fields=["active"])
     return JsonResponse({"current_status": "on"})
+
+def api_watchlist_remove(request, item):
+    watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
+    watchlist.active = False
+    watchlist.save(update_fields=["active"])
+    return JsonResponse({"current_status": "off"})

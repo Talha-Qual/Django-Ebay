@@ -8,6 +8,9 @@
         <title>{% block title %}Auctions{% endblock %}</title>
         <link rel="stylesheet" href="https://cdn.simplecss.org/simple.css">
         <link rel="stylesheet" href="{% static 'auctions/uaa490styles.css' %}" >
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     </head>
     <body>
         <header>
@@ -33,6 +36,11 @@
         </header>
         <main>
             {% block main %}
+            {% endblock %}
+            
+
+            {% block footer %}
+            <section><footer> <small> <center>Created by yours truly -Talha | Copyright 2049 </center></small> </footer></section>
             {% endblock %}
         </main>
     </body>
