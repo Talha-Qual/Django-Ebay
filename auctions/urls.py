@@ -14,4 +14,5 @@ urlpatterns = [
     path("category_listing/<str:selection>", views.category_listing, name="category_listing"),
     path("watchlist_page", views.watchlist_page, name="watchlist_page"),
     path("my_bids", views.bids_page, name="bids"),
+    path("api/watchlist_toggle/<int:item>", views.api_watchlist_toggle, name = 'watchlist_toggle')
 ]

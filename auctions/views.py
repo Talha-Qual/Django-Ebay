@@ -107,28 +107,16 @@ def view_listing(request, item):
                 watchlist = Watchlist.objects.get(user_id =request.user.id, listing_id = item)
                 watchlist.active = True
                 watchlist.save(update_fields=["active"])
-                data = {
-                    'watchlist_status': True
-                }
-                return JsonResponse(data)
-                #return redirect(reverse("view_listing", args = (item,)))
+                return redirect(reverse("view_listing", args = (item,)))
             except:
                 watchlist = Watchlist(user_id = request.user.id, listing_id = item, active=True)
                 watchlist.save()
-                data = {
-                    'watchlist_status': watchlist
-                }
-                return JsonResponse(data)
-                #return redirect(reverse("view_listing", args = (item,)))
+                return redirect(reverse("view_listing", args = (item,)))
         if "unwatch" in request.POST:
             watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
             watchlist.active = False
             watchlist.save(update_fields=["active"])
-            data = {
-                'watchlist_status': False
-            }
-            return JsonResponse(data)
-            #return redirect(reverse("view_listing", args=(item,)))
+            return redirect(reverse("view_listing", args=(item,)))
         if "my_comment" in request.POST:
             comment_form = CreateComment(request.POST)
             if comment_form.is_valid():
@@ -244,3 +232,17 @@ def watchlist_page(request):
     except:
         watching = 0
     return render(request, "auctions/watchlist.html", {"watching": watching, "watchlist": len(Watchlist.objects.filter(user_id=request.user.id)), "categories": Listings.CATEGORY_CHOICES})
+
+def api_watchlist_toggle(request, item):
+    if request.method == "POST":
+        if "watch" in request.POST:
+            watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
+            watchlist.active = True
+            watchlist.save(update_fields=["active"])
+            return JsonResponse({"current_status": "on"})
+        if "unwatch" in request.POST:
+            watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
+            watchlist.active = False
+            watchlist.save(update_fields=["active"])
+            return JsonResponse({"current_status": "off"})
+    return JsonResponse({"current_status": "on"})
