@@ -1,12 +1,22 @@
 {% extends "auctions/layout.html" %}
-
+{% load static %}
 {% block main %}
 <h2>Active Listings</h2>
 
 <article>
     {% for listing in listings %}
-  
     <section>
+        <!-- Watchlist toggle stuff -->
+        <div style = "float: right;">
+          <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
+            {% csrf_token %}
+            {% if watching and watching.active == 1 %}
+            <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
+            {% else %}
+            <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell" >
+            {% endif %}
+          </form>
+        </div>
         Title: {{listing.title}}
         <br>
         Description: {{listing.description}}
@@ -34,4 +44,6 @@
 
     {% endfor %}
   </article>
+  
+  <script src="{% static 'auctions/auctions.js' %}"></script>
 {% endblock %}

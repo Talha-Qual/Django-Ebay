@@ -7,8 +7,10 @@
 <div id = "accordion">
   <h3>Still open!</h3>
   <div>
+
   {% for item in inventory %} 
     {% if item.active == 1 %}
+
     <a href="{% url 'view_listing' item.id %}">
       <h5>{{ item.title }}</h5>
     </a>
@@ -23,12 +25,15 @@
       />
       {% endif %}
       <br>
+      <div class = "body-color">
     Description: {{item.description}}
+      </div>
     {% endif %}
   {% endfor %}
+
 </div>
   <h3>Sold</h3>
-<div>
+<div >
   {% for item in inventory %}
     {% if item.active == 0 %}
       <a href="{% url 'view_listing' item.id %}">

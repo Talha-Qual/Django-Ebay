@@ -3,9 +3,20 @@
 
 
 {% block main %}
+<section>
+<!-- Watchlist toggle stuff -->
+<div style = "float: right;">
+  <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
+    {% csrf_token %}
+    {% if watching and watching.active == 1 %}
+    <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
+    {% elif not watching or watching.active == 0 %}
+    <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell" >
+    {% endif %}
+  </form>
+</div>
 
 <!-- List the listing -->
-<section>
   Title: {{listing.title}}
   <br>
   Description: {{listing.description}}
@@ -53,19 +64,6 @@
     style = "max-height: 25px;"> -->
     {% endif %}
 </div>
-
-
-<!-- Watchlist toggle stuff -->
-<form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
-    {% csrf_token %}
-    <button type = "submit">
-      {% if watching and watching.active == 1 %}
-      <img src = "/media/images/crossed_out_bell.jpg" style="max-height:50px;" id = "no-bell" >
-      {% elif not watching or watching.active == 0 %}
-      <img src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
-      {% endif %}
-    </button>
-</form>
 
 <!-- Bidding Stuff -->
 {% if user.is_authenticated %}
@@ -126,6 +124,8 @@ Comments:
     <br>
   </section>
   {% endfor %}
+  {% else %}
+  Nobody has commented yet, be the first!
 {% endif %}
 
 <!-- submit comments -->
