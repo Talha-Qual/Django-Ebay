@@ -278,6 +278,5 @@ def api_watchlist_toggle(request, item):
             watchlist.save()
         else:
             watchlist = Watchlist.objects.create(user=request.user, listing=Listings.objects.get(pk = item), active = True)
-        status = "on" if watchlist.active else "off"
-        return JsonResponse({"current_status": status})
+        return JsonResponse({"current_status": watchlist.active})
     return JsonResponse({'error': 'error'})
