@@ -1,27 +1,49 @@
 {% extends "auctions/layout.html" %}
-
+{% load static %}
 {% block main %}
 <h2>Active Listings</h2>
 
 <article>
     {% for listing in listings %}
-  
     <section>
-        {{listing.title}}
+        <!-- Watchlist toggle stuff -->
+        <div style = "float: right;">
+          <form class = "watchlist-toggle" data-listing_id="{{listing.id}}" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
+            {% csrf_token %}
+            {% if watching and watching.active == 1 %}
+            <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell{{listing.id}}" >
+            {% else %}
+            <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell{{listing.id}}" >
+            {% endif %}
+          </form>
+        </div>
+        Title: {{listing.title}}
         <br>
-        {{listing.description}}
+        Description: {{listing.description}}
         <br>
-        Price: ${{listing.bid}}
+        {% if listing.highestbid < listing.price %}
+          Price: ${{listing.price}}
+        {% else %}
+          Price: ${{listing.highestbid}}
+        {% endif %}
         <br>
         {% if listing.image %}
             <img src = "{{listing.image.url}}" alt = "there should be an image here" style = "max-height: 300px;">
             <br>
         {% endif %}
-        The category is: {{listing.category}}
+
+        {% for category in categories %}
+        {% if listing.category == category.0 %}
+          The category is: {{ category.1 }}
+        {% endif %}
+        {% endfor %}
+
         <br>
-        <a href = "{% url 'view_listing' listing.title %}">Check this out!</a>
+        <a href = "{% url 'view_listing' listing.id %}"><button>Check this out!</button></a>
     </section>
 
     {% endfor %}
   </article>
+  
+  <script src="{% static 'auctions/auctions.js' %}"></script>
 {% endblock %}

@@ -1,9 +1,14 @@
 from django.forms import ModelForm
 from django.forms import fields  
-from . import models 
+from . models import *
 from django import forms
 
 class CreateListing(ModelForm):
   class Meta:
-    model = models.Listings
-    fields = '__all__'
+    model = Listings
+    fields = ['title', 'description', 'price', 'image', 'category']
+
+class CreateComment(ModelForm):
+  class Meta:
+    model = Comments
+    fields = ['comment']

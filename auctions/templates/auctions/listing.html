@@ -1,25 +1,141 @@
 {% extends "auctions/layout.html" %}
+{% load static %}
+
 
 {% block main %}
-<h2>One of a Kind</h2>
-
 <section>
-  {{listing.title}}
+<!-- Watchlist toggle stuff -->
+<div style = "float: right;">
+  <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
+    {% csrf_token %}
+    {% if watching and watching.active == 1 %}
+    <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
+    {% elif not watching or watching.active == 0 %}
+    <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell" >
+    {% endif %}
+  </form>
+</div>
+
+<!-- List the listing -->
+  Title: {{listing.title}}
   <br>
-  {{listing.description}}
+  Description: {{listing.description}}
   <br>
-  Price: ${{listing.bid}}
+  {% if listing.highestbid < listing.price %}
+    Price: ${{listing.price}}
+  {% else %}
+    Price: ${{listing.highestbid}}
+  {% endif %}
+  <br>
+  Posted by: {{ listing.user }}
   <br>
   {% if listing.image %}
-      <img src = "{{listing.image.url}}" style = "max-height: 300px;">
+      <img src = "{{listing.image.url}}" alt = "someone forgot to add an image here :( " style = "max-height: 300px;">
       <br>
   {% endif %}
-  The category is: {{listing.category}}
+  {% for category in categories %}
+  {% if listing.category == category.0 %}
+    The category is: {{ category.1 }}
+  {% endif %}
+  {% endfor %}
+  <br>
+  Original Price: ${{ listing.price }}
 </section>
 
-<section>
-  <button type = "submit"> Add this item to your Watchlist!
-  </button>
-</section>
+<!-- Watchlist stuff -->
+<div>
+  {% if watching and watching.active == 1 %}
+    <form action = "{% url 'view_listing' listing.id %}" method = "POST">
+      {% csrf_token %}
+      <button type = "submit" name = "unwatch" id ="watchlist"> Remove from Watchlist </button>
+    </form>
+    <!-- <img
+    id = "bell"
+    src = "/media/images/bell_icon.png"
+    style = "max-height: 25px;"> -->
+    {% elif not watching or watching.active == 0 %}
+    <form action = "{% url 'view_listing' listing.id %}" method = "POST">
+      {% csrf_token %}
+      <button type = "submit" name = "watch"> Add this item to your Watchlist!</button>
+    </form>
+    <!-- <img
+    id = "no_bell"
+    src = "/media/images/crossed_out_bell.jpg"
+    style = "max-height: 25px;"> -->
+    {% endif %}
+</div>
 
+<!-- Bidding Stuff -->
+{% if user.is_authenticated %}
+  {% if user != listing.user and listing.active == 1 %}
+  <form action = "{% url 'view_listing' listing.id %}" method = "POST">
+    {% csrf_token %}
+    <input type = "number" name = "amount"
+    {% if listing.highestbid > listing.price %}
+      min = "{{listing.highestbid|add:"1"}}" value = "{{listing.highestbid|add:"1"}}"
+    {% else %}
+      min = "{{ listing.price|add:"1" }}" value = "{{ listing.price|add:"1"}}"
+    {% endif %} >
+    <button type = "submit" name = "bid">Bid</button>
+  </form>
+  {% endif %}
+
+  {% if total_bids == 0 %}
+  There are no bids as of yet.
+  <br>
+  {% else %}
+  There are {{ total_bids }} bids total.
+  {% endif %}
+  <br>
+
+    {% if user != listing.user %} 
+      {% if winner.user_id == user.id and listing.active == 0 %}
+        You won this item for ${{listing.highestbid}} dollars!
+      {% elif winner.user_id == user.id %}
+        At the moment, you have the highest bid at ${{ listing.highestbid }}!
+      {% elif user.id == bids.user_id %}
+        Your bid is too low to win the current auction :(
+      {% endif %}
+  {% endif %}
+
+
+  {% if user == listing.user and listing.active == 1 %}
+    <form  action="{% url 'view_listing' listing.id %}" method="POST">
+      {% csrf_token %}
+      <button type="submit" name="close">Close Auction</button>
+    </form>
+  {% endif %}
+  <br>
+  {% if user == listing.user and listing.active == 0 %}
+    This item was sold for ${{listing.highestbid}} dollars!
+  {% endif %}
+
+  {% endif %}
+
+<!-- Comments Stuff -->
+
+<!-- View comments -->
+<br>
+Comments:
+{% if comments %}
+  {% for comment in comments %}
+  <section>
+    {{comment.user}} posted: {{ comment.comment }}
+    <br>
+  </section>
+  {% endfor %}
+  {% else %}
+  Nobody has commented yet, be the first!
+{% endif %}
+
+<!-- submit comments -->
+{% if user.is_authenticated %}
+  <form action = "{% url 'view_listing' listing.id %}" method = "POST">
+    {% csrf_token %}
+    {{ comment_form }}
+    <br>
+    <button type = "submit" name = "my_comment">Post</button>
+  </form>
+{% endif %}
+<script src="{% static 'auctions/auctions.js' %}"></script>
 {% endblock %}

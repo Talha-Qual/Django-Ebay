@@ -8,6 +8,9 @@
         <title>{% block title %}Auctions{% endblock %}</title>
         <link rel="stylesheet" href="https://cdn.simplecss.org/simple.css">
         <link rel="stylesheet" href="{% static 'auctions/uaa490styles.css' %}" >
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     </head>
     <body>
         <header>
@@ -15,11 +18,10 @@
             <nav>
                 <span>
                     <a href="{% url 'index' %}">Active Listings</a>
-                    <a href="#">Watchlist</a>
-                    <!-- Error here! Index Page not working with this link!! -->
-                    <a href="{% url 'categories_view' categories %}">Categories</a>
-                    <!-- Error here! Index Page not working with this link!! -->
+                    <a href="{% url 'watchlist_page' %}">Watchlist</a>
+                    <a href="{% url 'categories_view' %}">Categories</a>
                     <a href="{% url 'create_listing' %}">Create Listing</a>
+                    <a href="{% url 'personal_listings' %}">Personal Listings</a>
                 </span>
                 <span>
                     {% if user.is_authenticated %}
@@ -34,6 +36,11 @@
         </header>
         <main>
             {% block main %}
+            {% endblock %}
+            
+
+            {% block footer %}
+            <section><footer> <small> <center>Created by yours truly -Talha | Copyright 2049 </center></small> </footer></section>
             {% endblock %}
         </main>
     </body>
