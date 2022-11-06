@@ -8,12 +8,12 @@
     <section>
         <!-- Watchlist toggle stuff -->
         <div style = "float: right;">
-          <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
+          <form class = "watchlist-toggle" data-listing_id="{{listing.id}}" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
             {% csrf_token %}
             {% if watching and watching.active == 1 %}
-            <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
+            <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell{{listing.id}}" >
             {% else %}
-            <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell" >
+            <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell{{listing.id}}" >
             {% endif %}
           </form>
         </div>

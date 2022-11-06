@@ -250,7 +250,7 @@ def watchlist_page(request):
 #         return JsonResponse({"current_status": "on"})
 
 @login_required(login_url='login')
-def api_watchlist_toggle(request, item):
+def api_watchlist_toggle0(request, item):
     if request.method == "POST":
         if not Watchlist.objects.filter(user_id = request.user.id, listing_id = item).exists():
             my_watch = Watchlist.objects.create(user=request.user, listing=Listings.objects.get(pk = item), active = True)
@@ -267,4 +267,17 @@ def api_watchlist_toggle(request, item):
             watchlist.active = False
             watchlist.save(update_fields=["active"])
             return JsonResponse({"current_status": "off"})
+    return JsonResponse({'error': 'error'})
+
+@login_required(login_url='login')
+def api_watchlist_toggle(request, item):
+    if request.method == "POST":
+        if Watchlist.objects.filter(user_id = request.user.id, listing_id = item).exists():
+            watchlist = Watchlist.objects.get(user_id=request.user.id, listing_id=item)
+            watchlist.active = not watchlist.active
+            watchlist.save()
+        else:
+            watchlist = Watchlist.objects.create(user=request.user, listing=Listings.objects.get(pk = item), active = True)
+        status = "on" if watchlist.active else "off"
+        return JsonResponse({"current_status": status})
     return JsonResponse({'error': 'error'})
