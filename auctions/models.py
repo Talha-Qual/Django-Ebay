@@ -64,18 +64,3 @@ class Watchlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, default = None)
     listing = models.ForeignKey(Listings, on_delete=models.CASCADE, default = None)
     active = models.BooleanField(default=False)
-
-
-# class CreateForm(forms.Form):
-#   title = forms.CharField(label="Title")
-#   content = forms.CharField(label = "Contents", widget=forms.Textarea)
-#   bid_amount = forms.CharField(label="bid")
-
-# class EditForm(forms.Form):
-#     content = forms.CharField(label="Contents", widget=forms.Textarea)
-#     bid_amount = forms.CharField(label="bid")
-
-#     def set_values(self, title, content, bid_amount):
-#       self.entry_bid_amount = bid_amount
-#       self.entry_title = title
-#       self.entry_content = content
