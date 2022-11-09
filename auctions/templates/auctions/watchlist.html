@@ -5,19 +5,19 @@
 
 <article>
   {% for item in watching %}
+  <section>
+    <!-- Watchlist toggle stuff -->
+    <div style = "float: right;">
+      <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' item.id %}" method = "POST">
+        {% csrf_token %}
+        {% if item.watching and item.active == 1 %}
+        <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
+        {% elif not item.watching or item.active == 0 %}
+        <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell" >
+        {% endif %}
+      </form>
+    </div>
   {% if item and item.active == 1 %}
-    <section>
-      <!-- Watchlist toggle stuff -->
-      <div style = "float: right;">
-        <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' item.id %}" method = "POST">
-          {% csrf_token %}
-          {% if watching and watching.active == 1 %}
-          <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
-          {% elif not item.watching or item.watching.active == 0 %}
-          <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell" >
-          {% endif %}
-        </form>
-      </div>
       Title: {{item.title}}
       <br>
       Description: {{item.description}}

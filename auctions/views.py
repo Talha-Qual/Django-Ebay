@@ -233,38 +233,20 @@ def watchlist_page(request):
         watching = 0
     return render(request, "auctions/watchlist.html", {"watching": watching, "watchlist": len(Watchlist.objects.filter(user_id=request.user.id)), "categories": Listings.CATEGORY_CHOICES})
 
-# @login_required(login_url='login')
-# def api_watchlist_remove(request, item):
-#     if request.method == "POST":
-#         watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
-#         watchlist.active = False
-#         watchlist.save(update_fields=["active"])
-#         return JsonResponse({"current_status": "off"})
-
-# @login_required(login_url='login')
-# def api_watchlist_add(request, item):
-#     if request.method == "POST":
-#         watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
-#         watchlist.active = True
-#         watchlist.save(update_fields=["active"])
-#         return JsonResponse({"current_status": "on"})
-
 @login_required(login_url='login')
 def api_watchlist_toggle(request, item):
-    if request.method == "POST":
+    if request.method == "GET":
         if not Watchlist.objects.filter(user_id = request.user.id, listing_id = item).exists():
-            my_watch = Watchlist.objects.create(user=request.user, listing=Listings.objects.get(pk = item), active = True)
-            return JsonResponse({"current_status": "on"})
-        try:
-            watchlist = Watchlist.objects.get(user_id=request.user.id, listing_id=item)
-        except:
-            watchlist = None
+            Watchlist.objects.create(user=request.user, listing=Listings.objects.get(pk = item), active = True)
+            return JsonResponse({"icon_status": "on"})
+        watchlist = Watchlist.objects.get(user_id=request.user.id, listing_id=item)
+        # Toggle
         if watchlist.active == False:
             watchlist.active = True
             watchlist.save(update_fields=["active"])
-            return JsonResponse({"current_status": "on"})
+            return JsonResponse({"icon_status": "on"})
         if watchlist.active == True:
             watchlist.active = False
             watchlist.save(update_fields=["active"])
-            return JsonResponse({"current_status": "off"})
-    return JsonResponse({'error': 'error'})
+            return JsonResponse({"icon_status": "off"})
+    #return JsonResponse({'error': 'Something went wrong :('})

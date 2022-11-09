@@ -10,7 +10,7 @@
         <div style = "float: right;">
           <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
             {% csrf_token %}
-            {% if watching and watching.active == 1 %}
+            {% if user.watchlist == True %}
             <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
             {% else %}
             <input type = "image" src = "/media/images/crossed_bell.png" style="max-height:50px;" id = "bell" >

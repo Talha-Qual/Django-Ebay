@@ -6,8 +6,7 @@
 <section>
 <!-- Watchlist toggle stuff -->
 <div style = "float: right;">
-  <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' listing.id %}" method = "POST">
-    {% csrf_token %}
+  <form id = "watchlist-toggle" action = "{% url 'watchlist_toggle' listing.id %}" method = "GET">
     {% if watching and watching.active == 1 %}
     <input type = "image" src = "/media/images/bell_icon.png" style="max-height:50px;" id = "bell" >
     {% elif not watching or watching.active == 0 %}
