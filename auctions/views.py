@@ -1,6 +1,7 @@
 from os import access
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from .forms import CreateComment, CreateListing
@@ -14,12 +15,13 @@ from .models import User, Listings, Watchlist, Bids, Comments
 
 
 def index(request):
+
     listings = Listings.objects.filter(active=1)
-    return render(request, "auctions/index.html", {
+    args = {
         "listings": listings,
         "length": len(listings)
     }
-    )
+    return render(request, "auctions/index.html", args)
 
 def login_view(request):
     if request.method == "POST":
@@ -47,7 +49,6 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
-
 
 def register(request):
     if request.method == "POST":
@@ -83,22 +84,33 @@ def create_listing(request):
             instance = form.save(commit=False)
             instance.user = request.user
             instance.save()
-            # title = form.cleaned_data['title']
-            # content = form.cleaned_data['content']
-            # bid = form.cleaned_data['bid']
-            # Find a way to save the entry here
+            messages.success(request, 'Listing created succesfully')
             return redirect('index')
         else:
             return render(request, "auctions/create_listing.html", {"form": form})
     return render(request, "auctions/create_listing.html", {"form": CreateListing()})
 
-# if "watch" in request.POST:
-#     try:
-#         watchlist = Watchlist.objects.get(user_id=request.user.id)
-#     except:
-#         watchlist = Watchlist(user_id=request.user.id)
 @login_required(login_url='login')
 def view_listing(request, item):
+    # Sessions
+    recently_viewed_listings = None
+    # check if the value exists
+    if 'recently_viewed' in request.session:
+        if item in request.session['recently_viewed']:
+            # if the curr listing is in the session, remove it
+            request.session['recently_viewed'].remove(item)
+
+        recent_listings = Listings.objects.filter(pk__in = request.session['recently_viewed'])
+        recently_viewed_listings = sorted(recent_listings, key=lambda x: request.session['recently_viewed'].index(x.id))
+        request.session['recently_viewed'].insert(0, item)
+
+        if len(request.session['recently_viewed']) > 3:
+            request.session['recently_viewed'].pop()
+    # value doens't exist, so create it
+    else:
+        request.session['recently_viewed'] = [item]
+    request.session.modified = True 
+
     if request.method == "POST":
         # add a listing to your watchlist
         if "watch" in request.POST:
@@ -180,7 +192,8 @@ def view_listing(request, item):
             "watching": watching,
             "comments": Comments.objects.filter(listing_id=item),
             "categories": Listings.CATEGORY_CHOICES,
-            "comment_form": CreateComment()
+            "comment_form": CreateComment(),
+            "recently_viewed_listings": recently_viewed_listings
             })
 
 @login_required(login_url='login')

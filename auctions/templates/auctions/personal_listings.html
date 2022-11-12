@@ -8,10 +8,12 @@
 <h3>Still open!</h3>
 {% for item in inventory %}
 <div>
+  <div class = "pt-2">
   {% if item.active == 1 %}
   <a href="{% url 'view_listing' item.id %}">
     <h5>{{ item.title }}</h5>
   </a>
+  </div>
   {% if item.image == 'No image' %}
     <p>No image</p>
 
@@ -23,7 +25,8 @@
     />
     {% endif %}
     <br>
-  Description: {{item.description}}
+
+  <div class = "pb-2">Description: {{item.description}}</div>
   {% endif %}
 </div>
 {% endfor %}
@@ -34,10 +37,12 @@
 
 {% for item in inventory %}
 <div>
+  <div class = "pt-2">
   {% if item.active == 0 %}
     <a href="{% url 'view_listing' item.id %}">
       <h5>{{ item.title }}</h5>
     </a>
+  </div>
     {% if item.image == 'No image' %}
     <p>No image</p>
 
@@ -49,7 +54,7 @@
     />
     {% endif %}
     <br>
-    Description: {{item.description}}
+    <div class = "pb-2">Description: {{item.description}}</div>
   {% endif %}
 </div>
 {% endfor %}
@@ -61,9 +66,11 @@
 {% for listing, winner in zipped %}  
   {% if user == winner.user%}
   {% if listing.active == 0 %}
+  <div class = pt-2>
     <a href="{% url 'view_listing' listing.id %}">
       <h5>{{ listing.title }}</h5>
     </a>
+  </div>
   {% endif %}
     {% if listing.image == 'No image' %}
     <p>No image</p>
@@ -80,7 +87,7 @@
       Bought For: ${{listing.highestbid}}
     {% endif %}
     <br>
-  Description: {{listing.description}}
+  <div class = "pb-2">Description: {{listing.description}}</div>
   <br>
   <br>
   <br>
