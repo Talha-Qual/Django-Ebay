@@ -1,21 +1,30 @@
 {% extends "auctions/layout.html" %}
 
 {% block main %}
-
+{% if messages %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  {% for message in messages %}
+  {% if message.tags %} {% endif %} {{ message }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  {% endfor %}
+</div>
+{% endif %}
 <article>
 <div class = "container">
 <div class = "row justify-content-between">
 <!-- List the listing -->
   <div class = "col-md-4">
-    Title: {{listing.title}}
+    <div class = "pd-2">Title: {{listing.title}}</div>
     <br>
-    Description: {{listing.description}}
+    <div class = "pd-2">Description: {{listing.description}}</div>
     <br>
+    <div class = "pd-2">
     {% if listing.highestbid < listing.price %}
       Price: ${{listing.price}}
     {% else %}
       Price: ${{listing.highestbid}}
     {% endif %}
+    </div>
     <br>
     Posted by: {{ listing.user }}
     <br>
@@ -23,22 +32,25 @@
         <img src = "{{listing.image.url}}" alt = "someone forgot to add an image here :( " style = "max-height: 300px;">
         <br>
     {% endif %}
+
     {% for category in categories %}
     {% if listing.category == category.0 %}
-      The category is: {{ category.1 }}
+    <div class = "pd-2">The category is: {{ category.1 }}</div>
     {% endif %}
     {% endfor %}
+
     <br>
     Original Price: ${{ listing.price }}
   </div>
-
 
   <div class = "col-md-4 ">
     <div class = "float-end">
       <h4>Recently Viewed</h4>
       {% for recent_listing in recently_viewed_listings %}
         <div class = "p-2">
-          <h5>{{ recent_listing.title }}</h5>
+          <a href="{% url 'view_listing' recent_listing.id %}">
+            <h5>{{ recent_listing.title }}</h5>
+          </a>
           <img src ="{{recent_listing.image.url}}" alt = "" style = "height:75px">
         </div>
         <br>
@@ -117,7 +129,7 @@
 <!-- View comments -->
 <br>
 <div class = "row">
-Comments:
+<div class = "pm-2">Comments:</div>
 {% if comments %}
   {% for comment in comments %}
   <section>

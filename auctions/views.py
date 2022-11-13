@@ -4,7 +4,9 @@ from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.views.decorators.csrf import csrf_exempt
 from .forms import CreateComment, CreateListing
+from datetime import datetime
 from http.client import HTTPResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -15,7 +17,6 @@ from .models import User, Listings, Watchlist, Bids, Comments
 
 
 def index(request):
-
     listings = Listings.objects.filter(active=1)
     args = {
         "listings": listings,
@@ -48,7 +49,9 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    response = redirect(reverse("index"))
+    response.delete_cookie('num_visits', 'last_visit')
+    return response
 
 def register(request):
     if request.method == "POST":
@@ -90,6 +93,7 @@ def create_listing(request):
             return render(request, "auctions/create_listing.html", {"form": form})
     return render(request, "auctions/create_listing.html", {"form": CreateListing()})
 
+
 @login_required(login_url='login')
 def view_listing(request, item):
     # Sessions
@@ -118,6 +122,7 @@ def view_listing(request, item):
                 watchlist = Watchlist.objects.get(user_id =request.user.id, listing_id = item)
                 watchlist.active = True
                 watchlist.save(update_fields=["active"])
+                messages.success(request, 'Listing added to watchlist')
                 return redirect(reverse("view_listing", args = (item,)))
             except:
                 watchlist = Watchlist(user_id = request.user.id, listing_id = item, active=True)
@@ -127,6 +132,7 @@ def view_listing(request, item):
             watchlist = Watchlist.objects.get(user_id = request.user.id, listing_id = item)
             watchlist.active = False
             watchlist.save(update_fields=["active"])
+            messages.success(request, 'Listing removed from watchlist')
             return redirect(reverse("view_listing", args=(item,)))
         if "my_comment" in request.POST:
             comment_form = CreateComment(request.POST)
@@ -244,3 +250,19 @@ def watchlist_page(request):
     except:
         watching = 0
     return render(request, "auctions/watchlist.html", {"watching": watching, "watchlist": len(Watchlist.objects.filter(user_id=request.user.id)), "categories": Listings.CATEGORY_CHOICES})
+
+@login_required(login_url='login')
+def about_us(request):
+    response = render(request, 'auctions/about_us.html')
+    num_visits = int(request.COOKIES.get('num_visits', '0'))
+
+    if 'last_visit' in request.COOKIES:
+        last_visit = request.COOKIES['last_visit']
+        last_visit_time = datetime.strptime(last_visit[:-7], "%Y-%m-%d %H:%M:%S")
+
+        if (datetime.now() - last_visit_time).seconds > 0:
+            response.set_cookie('num_visits', num_visits + 1)
+            response.set_cookie('last_visit', datetime.now())
+    else:
+        response.set_cookie('last_visit', datetime.now())
+    return response
